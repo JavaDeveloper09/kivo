@@ -1,0 +1,396 @@
+/* Ana uygulama düzeni. Renkler index.css'teki değişkenlerden gelir (giriş ekranıyla aynı tema). */
+:root {
+  --panel: #142219;   /* kenar paneller */
+  --panel-2: #1a2e22; /* sohbet alanı (giriş kartıyla aynı) */
+  --line: #2ecc7120;  /* ince ayırıcı çizgiler */
+  --hover: #2ecc7114;
+  --active: #2ecc7126;
+}
+
+.app {
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 250px 1fr 240px;
+  grid-template-rows: 56px 1fr;
+  grid-template-areas:
+    'top top top'
+    'side chat members';
+  background: var(--bg);
+  overflow: hidden;
+}
+.app.no-members {
+  grid-template-columns: 250px 1fr;
+  grid-template-areas:
+    'top top'
+    'side chat';
+}
+
+/* ---------- Üst bar ---------- */
+.topbar {
+  grid-area: top;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 16px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+}
+.brand {
+  display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+  background: none; border: none; color: var(--text); cursor: pointer;
+  padding: 4px 8px 4px 4px; border-radius: 8px;
+}
+.brand:hover { background: var(--hover); }
+.brand-logo { width: 34px; height: 34px; display: block; }
+.brand-name { font-weight: 700; font-size: 18px; }
+
+.server-tabs { display: flex; gap: 6px; overflow-x: auto; flex: 1; scrollbar-width: none; }
+.server-tab {
+  flex-shrink: 0;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 17px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.server-tab:hover { background: var(--hover); color: var(--text); }
+.server-tab.active { background: var(--active); color: var(--text); border-color: var(--accent); }
+.server-tab.add { width: 34px; padding: 0; font-size: 20px; line-height: 1; color: var(--accent); }
+
+.user-menu { position: relative; flex-shrink: 0; }
+.user-button {
+  display: flex; align-items: center; gap: 8px;
+  background: none; border: none; color: var(--text);
+  padding: 4px 8px; border-radius: 6px; cursor: pointer;
+}
+.user-button:hover { background: var(--hover); }
+.user-name { font-weight: 600; font-size: 14px; }
+.dropdown {
+  position: absolute; right: 0; top: calc(100% + 6px);
+  width: 220px; padding: 6px;
+  background: var(--card); border: 1px solid var(--line); border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4); z-index: 10;
+}
+.dropdown-head { display: flex; flex-direction: column; padding: 8px 10px; border-bottom: 1px solid var(--line); margin-bottom: 4px; }
+.dropdown-head span { color: var(--muted); font-size: 13px; }
+.dropdown-item {
+  width: 100%; text-align: left; padding: 8px 10px; border-radius: 4px;
+  background: none; border: none; color: var(--text); font-size: 14px; cursor: pointer;
+}
+.dropdown-item:hover:not(:disabled) { background: var(--hover); }
+.dropdown-item:disabled { color: var(--muted); cursor: default; }
+.dropdown-item.danger { color: var(--danger); }
+.dropdown-item.danger:hover { background: #e5393522; }
+
+/* ---------- Avatar ---------- */
+.avatar {
+  position: relative; flex-shrink: 0;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  color: white; font-weight: 700;
+}
+.status {
+  position: absolute; right: -1px; bottom: -1px;
+  width: 30%; height: 30%; min-width: 9px; min-height: 9px;
+  border-radius: 50%; border: 2px solid var(--panel);
+}
+.status.online { background: var(--accent); }
+.status.offline { background: #5c6b62; }
+
+/* ---------- Kanal listesi ---------- */
+.sidebar {
+  grid-area: side;
+  background: var(--panel);
+  border-right: 1px solid var(--line);
+  overflow-y: auto;
+  padding: 0 8px 12px;
+  display: flex;
+  flex-direction: column;
+}
+.sidebar-hint {
+  margin-top: auto;
+  display: flex; gap: 8px; align-items: flex-start;
+  padding: 10px; border-radius: 8px;
+  background: var(--hover); color: var(--muted);
+  font-size: 12px; line-height: 1.4;
+}
+.sidebar-hint span { color: var(--accent); font-weight: 700; }
+.sidebar-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 14px 8px; margin-bottom: 4px;
+  border-bottom: 1px solid var(--line);
+}
+.sidebar-head h2 { font-size: 16px; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.primary.small { width: auto; height: 30px; padding: 0 12px; font-size: 13px; flex-shrink: 0; }
+
+.channel-group { margin-top: 14px; }
+.group-title {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 8px 6px;
+  font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em;
+  color: var(--muted);
+}
+.icon-btn {
+  background: none; border: none; color: var(--muted);
+  font-size: 18px; line-height: 1; cursor: pointer;
+  padding: 4px; border-radius: 4px; display: grid; place-items: center;
+}
+.icon-btn:hover { color: var(--text); background: var(--hover); }
+.icon-btn.toggled { color: var(--accent); }
+
+.channel {
+  width: 100%;
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 8px; margin-bottom: 2px;
+  border: none; border-radius: 6px;
+  background: none; color: var(--muted);
+  font-size: 15px; text-align: left; cursor: pointer;
+  border-left: 3px solid transparent;
+}
+.channel:hover { background: var(--hover); color: var(--text); }
+.channel.active { background: var(--active); color: var(--text); border-left-color: var(--accent); }
+.channel-icon { color: var(--accent); font-weight: 700; width: 16px; text-align: center; flex-shrink: 0; }
+
+/* ---------- Sohbet ---------- */
+.chat {
+  grid-area: chat;
+  display: flex; flex-direction: column;
+  min-width: 0; min-height: 0;
+  background: var(--panel-2);
+}
+.chat-head {
+  height: 52px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--line);
+}
+.chat-title { display: flex; align-items: center; gap: 6px; }
+.chat-title h3 { margin: 0; font-size: 16px; }
+
+.messages { flex: 1; overflow-y: auto; padding: 16px 0 8px; }
+.channel-intro { padding: 16px 20px 20px; border-bottom: 1px solid var(--line); margin-bottom: 12px; }
+.intro-icon {
+  width: 56px; height: 56px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--active); color: var(--accent);
+  font-size: 30px; font-weight: 700; margin-bottom: 10px;
+}
+.channel-intro h2 { margin: 0 0 4px; font-size: 22px; }
+.channel-intro p { margin: 0; color: var(--muted); }
+
+.message { display: flex; gap: 14px; padding: 6px 20px; margin-top: 10px; }
+.message:hover { background: #00000018; }
+.message.cont { margin-top: 0; padding: 2px 20px 2px 74px; position: relative; }
+.message p { margin: 0; line-height: 1.45; white-space: pre-wrap; word-break: break-word; }
+.message-body { min-width: 0; }
+.message-meta { display: flex; align-items: baseline; gap: 8px; margin-bottom: 2px; }
+.author { font-weight: 600; }
+.author.me { color: var(--accent); }
+.message-meta time, .hover-time { font-size: 12px; color: var(--muted); }
+.hover-time { position: absolute; left: 20px; top: 5px; width: 44px; text-align: right; opacity: 0; font-size: 11px; }
+.message.cont:hover .hover-time { opacity: 1; }
+
+.composer {
+  display: flex; gap: 10px; align-items: flex-end;
+  margin: 0 16px 16px; padding: 8px;
+  background: var(--input); border: 1px solid var(--line); border-radius: 10px;
+}
+.composer:focus-within { border-color: var(--accent); }
+.composer textarea {
+  flex: 1; resize: none; max-height: 160px;
+  background: none; border: none; outline: none;
+  color: var(--text); font: inherit; font-size: 15px; padding: 8px 6px;
+}
+.primary.send { width: auto; height: 38px; padding: 0 18px; font-size: 14px; }
+
+/* ---------- Üye listesi ---------- */
+.members {
+  grid-area: members;
+  background: var(--panel);
+  border-left: 1px solid var(--line);
+  overflow-y: auto;
+  padding: 16px 8px;
+}
+.members .group-title { margin-top: 8px; }
+.member { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 6px; }
+.member:hover { background: var(--hover); }
+.member.offline { opacity: 0.45; }
+.member-info { display: flex; flex-direction: column; min-width: 0; }
+.member-name { font-size: 14px; font-weight: 600; }
+.role-badge { font-size: 11px; color: var(--accent); font-weight: 600; }
+
+/* ---------- İletişim penceresi ---------- */
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: 50;
+  background: rgba(0, 0, 0, 0.55);
+  display: grid; place-items: center; padding: 16px;
+  animation: fade 0.15s ease-out;
+}
+.modal {
+  position: relative;
+  width: 100%; max-width: 360px;
+  padding: 28px 24px 24px;
+  background: var(--card); border: 1px solid #2ecc7140; border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  animation: pop 0.15s ease-out;
+}
+.modal h2 { margin: 10px 0 6px; font-size: 20px; }
+.modal p { margin: 0 0 18px; color: var(--muted); font-size: 14px; line-height: 1.4; }
+.modal-close {
+  position: absolute; top: 10px; right: 10px;
+  width: 30px; height: 30px; border-radius: 6px;
+  background: none; border: none; color: var(--muted); font-size: 16px; cursor: pointer;
+}
+.modal-close:hover { background: var(--hover); color: var(--text); }
+.contact-link {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px; border-radius: 8px;
+  background: var(--primary); color: white; text-decoration: none;
+  transition: background 0.15s;
+}
+.contact-link:hover { background: var(--primary-hover); }
+.contact-platform { font-size: 13px; opacity: 0.85; }
+.contact-handle { font-weight: 700; flex: 1; text-align: left; }
+@keyframes fade { from { opacity: 0; } }
+@keyframes pop { from { opacity: 0; transform: scale(0.96); } }
+
+/* ---------- Form pencereleri (sunucu, kanal, davet) ---------- */
+.form-modal { max-width: 420px; text-align: left; }
+.form-modal h2 { margin: 0 0 14px; padding-right: 28px; }
+.segmented {
+  display: flex; gap: 4px; padding: 4px; margin-bottom: 18px;
+  background: var(--input); border-radius: 8px;
+}
+.segmented button {
+  flex: 1; height: 34px; border: none; border-radius: 6px;
+  background: none; color: var(--muted); font-weight: 600; cursor: pointer;
+}
+.segmented button.active { background: var(--active); color: var(--text); }
+.copy-row { display: flex; gap: 8px; }
+.copy-row input {
+  flex: 1; min-width: 0; height: 40px; padding: 0 10px;
+  background: var(--input); color: var(--text);
+  border: 1px solid var(--line); border-radius: 4px; font-size: 14px; outline: none;
+}
+.copy-row .primary { width: auto; padding: 0 16px; flex-shrink: 0; }
+
+/* ---------- Sohbet durumları ---------- */
+.load-older { display: grid; place-items: center; padding: 8px 0 16px; }
+.load-older button {
+  background: var(--hover); color: var(--accent); border: 1px solid var(--line);
+  border-radius: 16px; padding: 6px 14px; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.messages-loading, .chat-placeholder { color: var(--muted); padding: 20px; text-align: center; }
+.chat-placeholder { display: grid; place-items: center; }
+.typing-line {
+  height: 22px; padding: 0 20px; flex-shrink: 0;
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: var(--muted);
+}
+.typing-dots { display: inline-flex; gap: 3px; }
+.typing-dots i {
+  width: 5px; height: 5px; border-radius: 50%; background: var(--accent);
+  animation: blink 1.2s infinite ease-in-out;
+}
+.typing-dots i:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots i:nth-child(3) { animation-delay: 0.4s; }
+@keyframes blink { 0%, 80%, 100% { opacity: 0.25; } 40% { opacity: 1; } }
+.send-error { margin: -10px 16px 12px; color: var(--danger); font-size: 13px; }
+
+.conn-banner {
+  position: fixed; top: 64px; left: 50%; transform: translateX(-50%); z-index: 40;
+  background: var(--primary); color: white; font-size: 13px; font-weight: 600;
+  padding: 8px 16px; border-radius: 16px; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.leave-btn {
+  margin-top: 18px; padding: 8px; border-radius: 6px;
+  background: none; border: 1px solid #e5393555; color: var(--danger);
+  font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.leave-btn:hover { background: #e5393522; }
+
+/* ---------- Hiç sunucu yokken ---------- */
+.app.empty { grid-template-columns: 1fr; grid-template-areas: 'top' 'main'; }
+.empty-state {
+  grid-area: main;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 10px; padding: 24px; text-align: center;
+}
+.empty-state h2 { margin: 8px 0 0; }
+.empty-state p { margin: 0 0 10px; color: var(--muted); }
+.empty-state .primary { width: auto; padding: 0 24px; }
+
+/* ---------- Sesli sohbet ---------- */
+.channel.voice-active { color: var(--text); background: var(--hover); }
+.channel.voice-active .channel-icon { color: var(--accent); }
+.voice-users { list-style: none; margin: 0 0 6px; padding: 0 0 0 30px; }
+.voice-user {
+  display: flex; align-items: center; gap: 8px;
+  padding: 3px 6px; border-radius: 6px;
+  font-size: 13px; color: var(--muted);
+}
+.voice-user .avatar { box-shadow: 0 0 0 2px transparent; transition: box-shadow 0.15s; }
+.voice-user.speaking { color: var(--text); }
+.voice-user.speaking .avatar { box-shadow: 0 0 0 2px var(--accent); } /* konuşan kişinin etrafında yeşil halka */
+.voice-user-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.voice-badge { color: var(--danger); flex-shrink: 0; }
+
+.voice-panel {
+  margin-top: auto; /* sidebar-hint'in üstünde, panelin dibine yapışık */
+  margin-bottom: 8px;
+  padding: 10px; border-radius: 8px;
+  background: var(--input); border: 1px solid var(--line);
+}
+.voice-panel + .sidebar-hint { margin-top: 0; }
+.voice-panel-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.voice-status { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.voice-status div { display: flex; flex-direction: column; min-width: 0; }
+.voice-status strong { font-size: 13px; color: var(--accent); white-space: nowrap; }
+.voice-status span { font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.voice-dot { width: 8px; height: 8px; border-radius: 50%; background: #c9a227; flex-shrink: 0; animation: blink 1.2s infinite; }
+.voice-dot.on { background: var(--accent); animation: none; }
+.voice-controls { display: flex; gap: 4px; flex-shrink: 0; }
+.voice-btn {
+  width: 30px; height: 30px; border-radius: 6px;
+  display: grid; place-items: center;
+  background: var(--hover); border: none; color: var(--text); cursor: pointer;
+}
+.voice-btn:hover:not(:disabled) { background: var(--active); }
+.voice-btn:disabled { opacity: 0.4; cursor: default; }
+.voice-btn.off { color: var(--danger); background: #e5393522; }
+.voice-btn.leave { background: var(--primary); color: white; }
+.voice-btn.leave:hover { background: var(--primary-hover); }
+.voice-error {
+  display: flex; align-items: flex-start; gap: 8px; justify-content: space-between;
+  margin-top: 8px; font-size: 12px; color: var(--danger); line-height: 1.4;
+}
+.voice-panel > .voice-error:first-child { margin-top: 0; }
+.voice-error button { background: none; border: none; color: var(--muted); cursor: pointer; padding: 0; }
+
+/* ---------- Ses ayarları penceresi ---------- */
+.settings-field { margin-bottom: 16px; }
+.settings-field label {
+  display: block; margin-bottom: 8px;
+  font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; color: var(--label);
+}
+.settings-field select {
+  width: 100%; height: 40px; padding: 0 10px;
+  background: var(--input); color: var(--text);
+  border: 1px solid var(--line); border-radius: 4px; font-size: 14px; outline: none; cursor: pointer;
+}
+.settings-field select:focus { border-color: var(--accent); }
+.settings-note { margin: 0 0 8px; font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+/* ---------- Dar ekran ---------- */
+@media (max-width: 900px) {
+  .app, .app.no-members { grid-template-columns: 200px 1fr; grid-template-areas: 'top top' 'side chat'; }
+  .members { display: none; }
+  .brand-name, .user-name { display: none; }
+}
