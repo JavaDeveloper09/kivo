@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState, type CSSProperties } from "react";
+import { useAuth } from "./lib/AuthContext";
 
 type Announcement = {
   id: string;
@@ -21,6 +22,7 @@ const formatDate = (iso: string) =>
   new Date(iso).toLocaleString("tr-TR", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
 
 export default function Announcements() {
+  const { user } = useAuth();
   const [loggedIn, setLoggedIn] = useState(false);
   const [items, setItems] = useState<Announcement[]>([]);
   const [canPost, setCanPost] = useState(false);
@@ -42,12 +44,13 @@ export default function Announcements() {
     } catch { /* ağ hatası: bir sonraki denemede tekrar */ }
   }, []);
 
-  // Açılışta ve her 20 saniyede bir yenile (yeni duyuru gelirse nokta yanar)
+  // Açılışta, giriş/çıkış yapılınca ve her 20 saniyede bir yenile (yeni duyuru gelirse nokta yanar)
   useEffect(() => {
+    if (!user) { setLoggedIn(false); setOpen(false); return; } // çıkış yapınca buton hemen gizlensin
     load();
     const timer = setInterval(load, 20000);
     return () => clearInterval(timer);
-  }, [load]);
+  }, [load, user]);
 
   // Esc ile kapat
   useEffect(() => {
@@ -99,14 +102,14 @@ export default function Announcements() {
 
   return (
     <>
-      <button style={styles.trigger} onClick={openPanel} aria-label="Duyurular">
-        📢 Duyurular
+      <button className="announce-trigger" style={styles.trigger} onClick={openPanel} aria-label="Duyurular">
+        📢<span className="announce-label"> Duyurular</span>
         {hasUnread && <span style={styles.dot} />}
       </button>
 
       {open && (
-        <div style={styles.overlay} onClick={() => setOpen(false)}>
-          <div style={styles.panel} onClick={(e) => e.stopPropagation()}>
+        <div className="announce-overlay" style={styles.overlay} onClick={() => setOpen(false)}>
+          <div className="announce-panel" style={styles.panel} onClick={(e) => e.stopPropagation()}>
             <div style={styles.header}>
               <h2 style={styles.heading}>📢 Duyurular</h2>
               <button style={styles.close} onClick={() => setOpen(false)} aria-label="Kapat">✕</button>

@@ -388,9 +388,87 @@
 .settings-field select:focus { border-color: var(--accent); }
 .settings-note { margin: 0 0 8px; font-size: 12px; color: var(--muted); line-height: 1.5; }
 
-/* ---------- Dar ekran ---------- */
+/* ---------- Dar ekran (telefon / tablet) ----------
+   900px altında: sohbet tam ekran, kanal listesi soldan, üye listesi sağdan çekmece olarak açılır.
+   Bu sınır lib/useMediaQuery.ts'teki MOBILE_QUERY ile aynı olmalı. */
+.nav-toggle { display: none; }
+.drawer-backdrop { display: none; }
+
 @media (max-width: 900px) {
-  .app, .app.no-members { grid-template-columns: 200px 1fr; grid-template-areas: 'top top' 'side chat'; }
-  .members { display: none; }
+  .app, .app.no-members {
+    height: 100vh;
+    height: 100dvh; /* mobil tarayıcılarda adres çubuğu hesaba katılsın */
+    grid-template-columns: 1fr;
+    grid-template-rows: 52px 1fr;
+    grid-template-areas: 'top' 'chat';
+  }
+
+  /* Üst bar: sadece logo, sunucu sekmeleri ve avatar */
+  .topbar { gap: 8px; padding: 0 10px; }
+  .brand { padding: 4px; }
   .brand-name, .user-name { display: none; }
+  .server-tab { height: 32px; padding: 0 12px; font-size: 13px; }
+  .server-tab.add { width: 32px; }
+  .user-menu { margin-left: 42px; } /* sağdaki 📢 duyuru butonuna yer bırak */
+
+  /* Çekmeceler */
+  .sidebar, .members {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 52px;
+    bottom: 0;
+    z-index: 30;
+    width: min(85vw, 300px);
+    transition: transform 0.22s ease;
+    box-shadow: 0 0 24px rgba(0, 0, 0, 0.45);
+  }
+  .sidebar { left: 0; transform: translateX(-105%); }
+  .members { right: 0; transform: translateX(105%); display: block; }
+  .app.nav-open .sidebar { transform: translateX(0); }
+  .app.members-open .members { transform: translateX(0); }
+
+  .drawer-backdrop {
+    display: block;
+    position: fixed; inset: 52px 0 0 0; z-index: 25;
+    background: rgba(0, 0, 0, 0.5);
+    animation: fade 0.15s ease-out;
+  }
+
+  .nav-toggle { display: grid; margin-left: -6px; margin-right: 2px; }
+  .chat-head { padding: 0 10px; height: 48px; }
+
+  /* Mesajlar */
+  .message { gap: 10px; padding: 6px 12px; }
+  .message.cont { padding: 2px 12px 2px 62px; }
+  .hover-time { display: none; }
+  .channel-intro { padding: 12px 14px 16px; }
+  .channel-intro h2 { font-size: 19px; }
+
+  /* Yazı kutusu: 16px altı yazı iPhone'da sayfayı yakınlaştırıyor */
+  .composer { margin: 0 8px 8px; }
+  .composer textarea { font-size: 16px; }
+  .primary.send { padding: 0 14px; }
+  .typing-line { padding: 0 12px; }
+
+  /* Dokunmatik ekranda daha rahat basılan butonlar */
+  .channel { padding: 10px 8px; }
+  .icon-btn { padding: 8px; }
+
+  /* Pencereler */
+  .modal-backdrop { padding: 12px; }
+  .modal { padding: 24px 16px 18px; }
+  .copy-row { flex-wrap: wrap; }
+  .copy-row .primary { width: 100%; }
+  .conn-banner { top: 58px; max-width: calc(100vw - 24px); text-align: center; }
+
+  /* Duyurular: telefonda üst barın sağında küçük bir ikon */
+  .announce-trigger {
+    top: 9px !important; left: auto !important; right: 52px; transform: none !important;
+    width: 34px; height: 34px; padding: 0 !important;
+    display: grid; place-items: center; font-size: 16px !important;
+  }
+  .announce-label { display: none; }
+  .announce-overlay { padding: 60px 10px 10px !important; }
+  .announce-panel { padding: 16px !important; max-height: calc(100dvh - 72px) !important; }
 }

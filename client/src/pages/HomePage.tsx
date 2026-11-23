@@ -5,6 +5,7 @@ import { useAuth } from '../lib/AuthContext'
 import { api, ApiError } from '../lib/api'
 import { createSocket } from '../lib/socket'
 import { useVoice } from '../lib/useVoice'
+import { MOBILE_QUERY, useMediaQuery } from '../lib/useMediaQuery'
 import type { Channel, ChannelType, Member, Message, ServerDetail, ServerSummary, VoiceUser } from '../lib/types'
 import TopBar from '../components/app/TopBar'
 import ChannelSidebar from '../components/app/ChannelSidebar'
@@ -42,6 +43,9 @@ export default function HomePage() {
   const [connected, setConnected] = useState(true)
   const [modal, setModal] = useState<ModalState>(null)
   const [showMembers, setShowMembers] = useState(true)
+  // Dar ekranda (telefon/tablet) kanal ve üye listeleri kenardan kayan çekmece olarak açılır
+  const isMobile = useMediaQuery(MOBILE_QUERY)
+  const [drawer, setDrawer] = useState<null | 'nav' | 'members'>(null)
   const [loadError, setLoadError] = useState<string | null>(null)
   const socketRef = useRef<Socket | null>(null)
   const lastTypingSent = useRef(0)
@@ -138,6 +142,17 @@ export default function HomePage() {
       cancelled = true
     }
   }, [activeId])
+
+  useEffect(() => {
+    if (!isMobile) setDrawer(null)
+  }, [isMobile])
+
+  useEffect(() => {
+    if (!drawer) return
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setDrawer(null)
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [drawer])
 
   const textChannels = detail?.channels.filter((c) => c.type === 'TEXT') ?? []
   const channel = textChannels.find((c) => c.id === lastChannel[detail?.id ?? '']) ?? textChannels[0] ?? null
@@ -261,7 +276,14 @@ export default function HomePage() {
   }
 
   return (
-    <div className={showMembers ? 'app' : 'app no-members'}>
+    <div
+      className={[
+        'app',
+        !isMobile && !showMembers && 'no-members',
+        drawer === 'nav' && 'nav-open',
+        drawer === 'members' && 'members-open',
+      ].filter(Boolean).join(' ')}
+    >
       {topBar}
       {banner}
       {detail ? (
@@ -269,7 +291,10 @@ export default function HomePage() {
           server={detail}
           isOwner={detail.ownerId === user.id}
           activeChannelId={channelId}
-          onSelect={(id) => setLastChannel((p) => ({ ...p, [detail.id]: id }))}
+          onSelect={(id) => {
+            setLastChannel((p) => ({ ...p, [detail.id]: id }))
+            setDrawer(null) // telefonda kanal seçince menüyü kapat
+          }}
           onInvite={() => setModal({ kind: 'invite' })}
           onAddChannel={(type) => setModal({ kind: 'channel', type })}
           onLeave={leaveServer}
@@ -289,13 +314,17 @@ export default function HomePage() {
           typingNames={typingNames}
           onTyping={notifyTyping}
           onSend={send}
-          showMembers={showMembers}
-          onToggleMembers={() => setShowMembers((s) => !s)}
+          showMembers={isMobile ? drawer === 'members' : showMembers}
+          onToggleMembers={() =>
+            isMobile ? setDrawer((d) => (d === 'members' ? null : 'members')) : setShowMembers((s) => !s)
+          }
+          onOpenNav={() => setDrawer('nav')}
         />
       ) : (
         <main className="chat chat-placeholder">{loadError ?? 'Yükleniyor…'}</main>
       )}
-      {showMembers && <MemberPanel members={detail?.members ?? []} />}
+      {(isMobile || showMembers) && <MemberPanel members={detail?.members ?? []} />}
+      {drawer && <div className="drawer-backdrop" onClick={() => setDrawer(null)} aria-hidden />}
       {modals}
     </div>
   )

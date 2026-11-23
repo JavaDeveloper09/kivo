@@ -14,6 +14,7 @@ type Props = {
   onSend: (content: string) => Promise<string | null> // hata mesajı ya da null
   showMembers: boolean
   onToggleMembers: () => void
+  onOpenNav: () => void // telefonda kanal menüsünü açar
 }
 
 const GROUP_WINDOW_MS = 5 * 60_000 // aynı kişinin 5 dk içindeki mesajları tek blok
@@ -35,7 +36,7 @@ function typingText(names: string[]) {
 }
 
 export default function ChatArea(props: Props) {
-  const { channel, messages, loading, hasMore, onLoadOlder, meId, typingNames, onTyping, onSend, showMembers, onToggleMembers } = props
+  const { channel, messages, loading, hasMore, onLoadOlder, meId, typingNames, onTyping, onSend, showMembers, onToggleMembers, onOpenNav } = props
   const [draft, setDraft] = useState('')
   const [sending, setSending] = useState(false)
   const [sendError, setSendError] = useState<string | null>(null)
@@ -96,6 +97,11 @@ export default function ChatArea(props: Props) {
     <main className="chat">
       <div className="chat-head">
         <div className="chat-title">
+          <button className="icon-btn nav-toggle" onClick={onOpenNav} aria-label="Kanalları göster" title="Kanallar">
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden>
+              <path fill="currentColor" d="M3 6h18v2H3V6Zm0 5h18v2H3v-2Zm0 5h18v2H3v-2Z" />
+            </svg>
+          </button>
           <span className="channel-icon">#</span>
           <h3>{channel.name}</h3>
         </div>
