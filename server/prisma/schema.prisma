@@ -2,10 +2,9 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// Geliştirme için SQLite. Canlıya alırken provider = "postgresql" yapıp
-// DATABASE_URL'i Postgres adresine çevirmen yeterli.
+// PostgreSQL (Neon). DATABASE_URL: Neon'daki doğrudan (direct, "-pooler" olmayan) bağlantı adresi.
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 

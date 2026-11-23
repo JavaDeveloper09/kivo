@@ -7,7 +7,9 @@
 ## Teknolojiler
 - **Frontend:** React 19, TypeScript, Vite, React Router
 - **Backend:** Node.js, Express, Socket.IO (WebSocket), TypeScript, Zod
-- **Veritabanı:** Prisma ORM (geliştirmede SQLite, canlıda PostgreSQL)
+- **Veritabanı:** PostgreSQL (Neon) + Prisma ORM
+- **Ses:** LiveKit (WebRTC)
+- **Yayın:** Render (tek servis: Express hem API'yi hem derlenmiş React'i sunar)
 
 ## Özellikler (şu an)
 - Sunucu oluşturma, davet linkiyle katılma, sunucudan ayrılma
@@ -37,8 +39,8 @@
 # Backend
 cd server
 npm install
-cp .env.example .env        # JWT_SECRET'ı değiştir
-npx prisma migrate dev      # veritabanını oluşturur
+cp .env.example .env        # DATABASE_URL (Neon) ve JWT_SECRET'ı doldur
+npx prisma migrate deploy   # tabloları oluşturur
 npm run dev                 # http://localhost:4000
 
 # Frontend (yeni terminal)
@@ -47,6 +49,12 @@ npm install
 npm run dev                 # http://localhost:5173
 ```
 Şifre sıfırlama e-postası henüz gerçekten gönderilmiyor; link backend terminaline yazılır.
+
+## Yayına alma (Render + Neon)
+1. **Neon**'da proje aç, *Connect* penceresinde **Connection pooling'i kapatıp** bağlantı adresini kopyala.
+2. Render'da **New → Blueprint** ile bu depoyu seç. `render.yaml` servisi kendisi tanımlar.
+3. Render'ın sorduğu `DATABASE_URL` ve `LIVEKIT_*` değerlerini gir. `JWT_SECRET`'ı Render kendisi üretir.
+4. Her `git push` sonrası Render yeniden derler; veritabanı değişiklikleri `prisma migrate deploy` ile otomatik uygulanır.
 
 ## API
 | Metot | Yol | Açıklama |

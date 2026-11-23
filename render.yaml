@@ -1,0 +1,29 @@
+# Render Blueprint: Render bu dosyayı okuyup siteyi kendisi kurar.
+# Render -> New -> Blueprint -> bu depoyu seç. "sync: false" olanları Render sana soracak.
+services:
+  - type: web
+    name: kivo
+    runtime: node
+    plan: free
+    region: frankfurt # Türkiye'ye en yakın bölge
+    branch: main
+    autoDeploy: true # GitHub'a her push'ta otomatik yeniden yayınla
+    buildCommand: >-
+      cd client && npm ci --include=dev && npm run build &&
+      cd ../server && npm ci --include=dev && npx prisma generate && npm run build &&
+      npx prisma migrate deploy
+    startCommand: cd server && npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: DATABASE_URL # Neon bağlantı adresi
+        sync: false
+      - key: JWT_SECRET # Render rastgele, güçlü bir değer üretir
+        generateValue: true
+      - key: LIVEKIT_URL
+        sync: false
+      - key: LIVEKIT_API_KEY
+        sync: false
+      - key: LIVEKIT_API_SECRET
+        sync: false
